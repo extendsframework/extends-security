@@ -11,7 +11,7 @@ use ExtendsFramework\ServiceLocator\Resolver\StaticFactory\StaticFactoryInterfac
 use ExtendsFramework\ServiceLocator\ServiceLocatorInterface;
 use PHPUnit\Framework\TestCase;
 
-class AuthenticatorFactoryTest extends TestCase
+class AuthorizerFactoryTest extends TestCase
 {
     /**
      * Create service.
