@@ -15,7 +15,9 @@
     },
     "require-dev": {
         "php": ">=7.1",
-        "phpunit/phpunit": "6.*"
+        "phpunit/phpunit": "6.*",
+        "extendsframework/extends-http": "dev-master",
+        "extendsframework/extends-servicelocator": "dev-master"
     },
     "autoload": {
         "psr-4": {
