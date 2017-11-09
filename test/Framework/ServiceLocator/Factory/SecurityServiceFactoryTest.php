@@ -15,7 +15,7 @@ class SecurityServiceFactoryTest extends TestCase
     /**
      * Create service.
      *
-     * Test that ...
+     * Test that instance of SecurityServiceInterface will be created.
      *
      * @covers \ExtendsFramework\Security\Framework\ServiceLocator\Factory\SecurityServiceFactory::createService()
      * @covers \ExtendsFramework\Security\Framework\ServiceLocator\Factory\SecurityServiceFactory::getAuthorizer()
