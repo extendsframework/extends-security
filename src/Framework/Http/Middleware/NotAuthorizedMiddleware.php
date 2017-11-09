@@ -8,10 +8,29 @@ use ExtendsFramework\Http\Middleware\MiddlewareInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
 use ExtendsFramework\Http\Response\Response;
 use ExtendsFramework\Http\Response\ResponseInterface;
+use ExtendsFramework\Logger\LoggerInterface;
+use ExtendsFramework\Logger\Priority\Notice\NoticePriority;
 use ExtendsFramework\Security\Authorization\AuthorizationException;
 
 class NotAuthorizedMiddleware implements MiddlewareInterface
 {
+    /**
+     * Logger.
+     *
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * NotAuthorizedMiddleware constructor.
+     *
+     * @param LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * @inheritDoc
      */
@@ -20,11 +39,12 @@ class NotAuthorizedMiddleware implements MiddlewareInterface
         try {
             return $chain->proceed($request);
         } catch (AuthorizationException $exception) {
-            return (new Response())
-                ->withStatusCode(403)
-                ->withBody([
-                    'message' => $exception->getMessage()
-                ]);
+            $this->logger->log(sprintf(
+                'Request authorization failed, got message "%s".',
+                $exception->getMessage()
+            ), new NoticePriority());
+
+            return (new Response())->withStatusCode(403);
         }
     }
 }

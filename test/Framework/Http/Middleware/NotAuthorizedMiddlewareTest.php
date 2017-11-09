@@ -6,6 +6,8 @@ namespace ExtendsFramework\Security\Framework\Http\Middleware;
 use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
 use ExtendsFramework\Http\Response\ResponseInterface;
+use ExtendsFramework\Logger\LoggerInterface;
+use ExtendsFramework\Logger\Priority\PriorityInterface;
 use ExtendsFramework\Security\Authorization\AuthorizationException;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -21,6 +23,15 @@ class NotAuthorizedMiddlewareTest extends TestCase
      */
     public function testProcess(): void
     {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects($this->once())
+            ->method('log')
+            ->with(
+                'Request authorization failed, got message "Not authorized.".',
+                $this->isInstanceOf(PriorityInterface::class)
+            );
+
         $request = $this->createMock(RequestInterface::class);
 
         $chain = $this->createMock(MiddlewareChainInterface::class);
@@ -33,16 +44,14 @@ class NotAuthorizedMiddlewareTest extends TestCase
         /**
          * @var RequestInterface         $request
          * @var MiddlewareChainInterface $chain
+         * @var LoggerInterface          $logger
          */
-        $middleware = new NotAuthorizedMiddleware();
+        $middleware = new NotAuthorizedMiddleware($logger);
         $response = $middleware->process($request, $chain);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         if ($response instanceof ResponseInterface) {
             $this->assertSame(403, $response->getStatusCode());
-            $this->assertSame([
-                'message' => 'Not authorized.',
-            ], $response->getBody());
         }
     }
 }
