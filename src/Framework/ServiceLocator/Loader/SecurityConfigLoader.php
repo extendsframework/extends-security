@@ -35,7 +35,10 @@ class SecurityConfigLoader implements LoaderInterface
                     StorageInterface::class => StorageFactory::class
                 ],
                 ReflectionResolver::class => [
-                    SecurityServiceInterface::class => SecurityService::class
+                    SecurityServiceInterface::class => SecurityService::class,
+                    NotAuthenticatedMiddleware::class => NotAuthenticatedMiddleware::class,
+                    NotAuthorizedMiddleware::class => NotAuthorizedMiddleware::class,
+                    RouterAuthorizationMiddleware::class => RouterAuthorizationMiddleware::class,
                 ],
             ],
             MiddlewareChainInterface::class => [
