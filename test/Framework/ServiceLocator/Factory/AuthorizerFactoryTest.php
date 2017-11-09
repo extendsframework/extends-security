@@ -31,7 +31,7 @@ class AuthorizerFactoryTest extends TestCase
                 AuthorizerInterface::class => [
                     'realms' => [
                         [
-                            'name' => RealmStub::class,
+                            'name' => AuthorizerRealmStub::class,
                             'options' => [
                                 'foo' => 'bar'
                             ],
@@ -43,8 +43,8 @@ class AuthorizerFactoryTest extends TestCase
         $serviceLocator
             ->expects($this->once())
             ->method('getService')
-            ->with(RealmStub::class, ['foo' => 'bar'])
-            ->willReturn(new RealmStub());
+            ->with(AuthorizerRealmStub::class, ['foo' => 'bar'])
+            ->willReturn(new AuthorizerRealmStub());
 
         /**
          * @var ServiceLocatorInterface $serviceLocator
@@ -56,7 +56,7 @@ class AuthorizerFactoryTest extends TestCase
     }
 }
 
-class RealmStub implements RealmInterface, StaticFactoryInterface
+class AuthorizerRealmStub implements RealmInterface, StaticFactoryInterface
 {
     /**
      * @inheritDoc
