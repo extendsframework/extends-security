@@ -35,20 +35,16 @@ class RouterAuthorizationMiddlewareTest extends TestCase
 
         $routeMatch = $this->createMock(RouteMatchInterface::class);
         $routeMatch
-            ->expects($this->exactly(2))
-            ->method('getParameter')
-            ->withConsecutive(
-                ['permissions', []],
-                ['roles', []]
-            )
-            ->willReturnOnConsecutiveCalls(
-                [
-                    'foo:bar:baz'
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn([
+                'permissions' => [
+                    'foo:bar:baz',
                 ],
-                [
-                    'administrator'
-                ]
-            );
+                'roles' => [
+                    'administrator',
+                ],
+            ]);
 
         $request = $this->createMock(RequestInterface::class);
         $request

@@ -36,11 +36,13 @@ class RouterAuthorizationMiddleware implements MiddlewareInterface
     {
         $match = $request->getAttribute('routeMatch');
         if ($match instanceof RouteMatchInterface) {
-            foreach ($match->getParameter('permissions', []) as $permission) {
+            $parameters = $match->getParameters();
+
+            foreach ($parameters['permissions'] ?? [] as $permission) {
                 $this->securityService->checkPermission($permission);
             }
 
-            foreach ($match->getParameter('roles', []) as $role) {
+            foreach ($parameters['roles'] ?? [] as $role) {
                 $this->securityService->checkRole($role);
             }
         }
