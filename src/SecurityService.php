@@ -55,10 +55,14 @@ class SecurityService implements SecurityServiceInterface
      */
     public function authenticate(TokenInterface $token): SecurityServiceInterface
     {
-        $info = $this->authenticator->authenticate($token);
-        $this->storage->setIdentity(
-            new Identity($info->getIdentifier())
-        );
+        $info = $this
+            ->getAuthenticator()
+            ->authenticate($token);
+        $this
+            ->getStorage()
+            ->setIdentity(
+                new Identity($info->getIdentifier())
+            );
 
         return $this;
     }
@@ -68,7 +72,9 @@ class SecurityService implements SecurityServiceInterface
      */
     public function getIdentity(): IdentityInterface
     {
-        $identity = $this->storage->getIdentity();
+        $identity = $this
+            ->getStorage()
+            ->getIdentity();
         if ($identity instanceof IdentityInterface) {
             return $identity;
         }
@@ -81,10 +87,12 @@ class SecurityService implements SecurityServiceInterface
      */
     public function isPermitted(string $permission): bool
     {
-        return $this->authorizer->isPermitted(
-            $this->getIdentity(),
-            new Permission($permission)
-        );
+        return $this
+            ->getAuthorizer()
+            ->isPermitted(
+                $this->getIdentity(),
+                new Permission($permission)
+            );
     }
 
     /**
@@ -92,10 +100,12 @@ class SecurityService implements SecurityServiceInterface
      */
     public function checkPermission(string $permission): SecurityServiceInterface
     {
-        $this->authorizer->checkPermission(
-            $this->getIdentity(),
-            new Permission($permission)
-        );
+        $this
+            ->getAuthorizer()
+            ->checkPermission(
+                $this->getIdentity(),
+                new Permission($permission)
+            );
 
         return $this;
     }
@@ -105,10 +115,12 @@ class SecurityService implements SecurityServiceInterface
      */
     public function hasRole(string $role): bool
     {
-        return $this->authorizer->hasRole(
-            $this->getIdentity(),
-            new Role($role)
-        );
+        return $this
+            ->getAuthorizer()
+            ->hasRole(
+                $this->getIdentity(),
+                new Role($role)
+            );
     }
 
     /**
@@ -116,11 +128,43 @@ class SecurityService implements SecurityServiceInterface
      */
     public function checkRole(string $role): SecurityServiceInterface
     {
-        $this->authorizer->checkRole(
-            $this->getIdentity(),
-            new Role($role)
-        );
+        $this
+            ->getAuthorizer()
+            ->checkRole(
+                $this->getIdentity(),
+                new Role($role)
+            );
 
         return $this;
+    }
+
+    /**
+     * Get authenticator.
+     *
+     * @return AuthenticatorInterface
+     */
+    protected function getAuthenticator(): AuthenticatorInterface
+    {
+        return $this->authenticator;
+    }
+
+    /**
+     * Get authorizer.
+     *
+     * @return AuthorizerInterface
+     */
+    protected function getAuthorizer(): AuthorizerInterface
+    {
+        return $this->authorizer;
+    }
+
+    /**
+     * Get storage.
+     *
+     * @return StorageInterface
+     */
+    protected function getStorage(): StorageInterface
+    {
+        return $this->storage;
     }
 }
