@@ -17,16 +17,16 @@ abstract class AuthenticationMiddleware implements MiddlewareInterface
      *
      * @var SecurityServiceInterface
      */
-    protected $security;
+    protected $securityService;
 
     /**
      * AuthenticationMiddleware constructor.
      *
-     * @param SecurityServiceInterface $security
+     * @param SecurityServiceInterface $securityService
      */
-    public function __construct(SecurityServiceInterface $security)
+    public function __construct(SecurityServiceInterface $securityService)
     {
-        $this->security = $security;
+        $this->securityService = $securityService;
     }
 
     /**
@@ -34,12 +34,14 @@ abstract class AuthenticationMiddleware implements MiddlewareInterface
      */
     public function process(RequestInterface $request, MiddlewareChainInterface $chain): ResponseInterface
     {
-        $this->security->authenticate(
-            $this->getToken($request)
-        );
+        $this
+            ->getSecurityService()
+            ->authenticate(
+                $this->getToken($request)
+            );
 
         return $chain->proceed(
-            $request->andAttribute('identity', $this->security->getIdentity())
+            $request->andAttribute('identity', $this->securityService->getIdentity())
         );
     }
 
@@ -50,4 +52,14 @@ abstract class AuthenticationMiddleware implements MiddlewareInterface
      * @return TokenInterface
      */
     abstract protected function getToken(RequestInterface $request): TokenInterface;
+
+    /**
+     * Get security service.
+     *
+     * @return SecurityServiceInterface
+     */
+    protected function getSecurityService(): SecurityServiceInterface
+    {
+        return $this->securityService;
+    }
 }

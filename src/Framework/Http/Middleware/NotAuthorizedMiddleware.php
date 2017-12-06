@@ -39,12 +39,24 @@ class NotAuthorizedMiddleware implements MiddlewareInterface
         try {
             return $chain->proceed($request);
         } catch (AuthorizationException $exception) {
-            $this->logger->log(sprintf(
-                'Request authorization failed, got message "%s".',
-                $exception->getMessage()
-            ), new NoticePriority());
+            $this
+                ->getLogger()
+                ->log(sprintf(
+                    'Request authorization failed, got message "%s".',
+                    $exception->getMessage()
+                ), new NoticePriority());
 
             return (new Response())->withStatusCode(403);
         }
+    }
+
+    /**
+     * Get logger.
+     *
+     * @return LoggerInterface
+     */
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
     }
 }

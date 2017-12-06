@@ -39,14 +39,28 @@ class RouterAuthorizationMiddleware implements MiddlewareInterface
             $parameters = $match->getParameters();
 
             foreach ($parameters['permissions'] ?? [] as $permission) {
-                $this->securityService->checkPermission($permission);
+                $this
+                    ->getSecurityService()
+                    ->checkPermission($permission);
             }
 
             foreach ($parameters['roles'] ?? [] as $role) {
-                $this->securityService->checkRole($role);
+                $this
+                    ->getSecurityService()
+                    ->checkRole($role);
             }
         }
 
         return $chain->proceed($request);
+    }
+
+    /**
+     * Get security service.
+     *
+     * @return SecurityServiceInterface
+     */
+    public function getSecurityService(): SecurityServiceInterface
+    {
+        return $this->securityService;
     }
 }
