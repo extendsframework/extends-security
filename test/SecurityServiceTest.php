@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security;
 
-use ExtendsFramework\Security\Authentication\AuthenticationInfoInterface;
-use ExtendsFramework\Security\Authentication\AuthenticatorInterface;
-use ExtendsFramework\Security\Authentication\Token\TokenInterface;
-use ExtendsFramework\Security\Authorization\AuthorizerInterface;
-use ExtendsFramework\Security\Authorization\Permission\PermissionInterface;
-use ExtendsFramework\Security\Authorization\Role\RoleInterface;
-use ExtendsFramework\Security\Identity\IdentityInterface;
-use ExtendsFramework\Security\Identity\Storage\StorageInterface;
+use ExtendsFramework\Authentication\AuthenticationInfoInterface;
+use ExtendsFramework\Authentication\AuthenticatorInterface;
+use ExtendsFramework\Authentication\Token\TokenInterface;
+use ExtendsFramework\Authorization\AuthorizerInterface;
+use ExtendsFramework\Authorization\Permission\PermissionInterface;
+use ExtendsFramework\Authorization\Role\RoleInterface;
+use ExtendsFramework\Identity\IdentityInterface;
+use ExtendsFramework\Identity\Storage\StorageInterface;
 use PHPUnit\Framework\TestCase;
 
 class SecurityServiceTest extends TestCase
@@ -23,6 +23,7 @@ class SecurityServiceTest extends TestCase
      * @covers \ExtendsFramework\Security\SecurityService::__construct()
      * @covers \ExtendsFramework\Security\SecurityService::authenticate()
      * @covers \ExtendsFramework\Security\SecurityService::getIdentity()
+     * @covers \ExtendsFramework\Security\SecurityService::getAuthenticator()
      */
     public function testAuthenticate(): void
     {
@@ -78,6 +79,7 @@ class SecurityServiceTest extends TestCase
      * @covers \ExtendsFramework\Security\SecurityService::checkPermission()
      * @covers \ExtendsFramework\Security\SecurityService::hasRole()
      * @covers \ExtendsFramework\Security\SecurityService::checkRole()
+     * @covers \ExtendsFramework\Security\SecurityService::getAuthorizer()
      */
     public function testAuthorizerMethods(): void
     {
@@ -147,6 +149,7 @@ class SecurityServiceTest extends TestCase
      *
      * @covers                   \ExtendsFramework\Security\SecurityService::__construct()
      * @covers                   \ExtendsFramework\Security\SecurityService::getIdentity()
+     * @covers                   \ExtendsFramework\Security\SecurityService::getStorage()
      * @covers                   \ExtendsFramework\Security\Exception\IdentityNotFound::__construct()
      * @expectedException        \ExtendsFramework\Security\Exception\IdentityNotFound
      * @expectedExceptionMessage No identity found. Please authenticate first.

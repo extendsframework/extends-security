@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security;
 
-use ExtendsFramework\Security\Authentication\AuthenticationException;
-use ExtendsFramework\Security\Authentication\Token\TokenInterface;
-use ExtendsFramework\Security\Authorization\AuthorizationException;
-use ExtendsFramework\Security\Identity\IdentityInterface;
+use ExtendsFramework\Authentication\AuthenticationException;
+use ExtendsFramework\Authentication\Token\TokenInterface;
+use ExtendsFramework\Authorization\AuthorizationException;
+use ExtendsFramework\Identity\IdentityInterface;
 
 interface SecurityServiceInterface
 {

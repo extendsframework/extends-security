@@ -6,7 +6,7 @@ namespace ExtendsFramework\Security\Framework\Http\Middleware;
 use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
 use ExtendsFramework\Http\Response\ResponseInterface;
-use ExtendsFramework\Http\Router\Route\RouteMatchInterface;
+use ExtendsFramework\Router\Route\RouteMatchInterface;
 use ExtendsFramework\Security\SecurityServiceInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -19,6 +19,7 @@ class RouterAuthorizationMiddlewareTest extends TestCase
      *
      * @covers \ExtendsFramework\Security\Framework\Http\Middleware\RouterAuthorizationMiddleware::__construct()
      * @covers \ExtendsFramework\Security\Framework\Http\Middleware\RouterAuthorizationMiddleware::process()
+     * @covers \ExtendsFramework\Security\Framework\Http\Middleware\RouterAuthorizationMiddleware::getSecurityService()
      */
     public function testProcess(): void
     {

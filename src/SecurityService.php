@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security;
 
-use ExtendsFramework\Security\Authentication\AuthenticatorInterface;
-use ExtendsFramework\Security\Authentication\Token\TokenInterface;
-use ExtendsFramework\Security\Authorization\AuthorizerInterface;
-use ExtendsFramework\Security\Authorization\Permission\Permission;
-use ExtendsFramework\Security\Authorization\Role\Role;
+use ExtendsFramework\Authentication\AuthenticatorInterface;
+use ExtendsFramework\Authentication\Token\TokenInterface;
+use ExtendsFramework\Authorization\AuthorizerInterface;
+use ExtendsFramework\Authorization\Permission\Permission;
+use ExtendsFramework\Authorization\Role\Role;
 use ExtendsFramework\Security\Exception\IdentityNotFound;
-use ExtendsFramework\Security\Identity\Identity;
-use ExtendsFramework\Security\Identity\IdentityInterface;
-use ExtendsFramework\Security\Identity\Storage\StorageInterface;
+use ExtendsFramework\Identity\Identity;
+use ExtendsFramework\Identity\IdentityInterface;
+use ExtendsFramework\Identity\Storage\StorageInterface;
 
 class SecurityService implements SecurityServiceInterface
 {

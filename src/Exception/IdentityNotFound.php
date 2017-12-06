@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security\Exception;
 
-use ExtendsFramework\Security\Authentication\AuthenticationException;
+use ExtendsFramework\Authentication\AuthenticationException;
 use ExtendsFramework\Security\SecurityServiceException;
 use LogicException;
 

@@ -7,7 +7,7 @@ use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Middleware\MiddlewareInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
 use ExtendsFramework\Http\Response\ResponseInterface;
-use ExtendsFramework\Security\Authentication\Token\TokenInterface;
+use ExtendsFramework\Authentication\Token\TokenInterface;
 use ExtendsFramework\Security\SecurityServiceInterface;
 
 abstract class AuthenticationMiddleware implements MiddlewareInterface
