@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security\Framework\ServiceLocator\Loader;
 
-use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Security\Framework\Http\Middleware\RouterAuthorizationMiddleware;
 use ExtendsFramework\Security\SecurityService;
 use ExtendsFramework\Security\SecurityServiceInterface;
@@ -24,9 +23,6 @@ class SecurityConfigLoader implements LoaderInterface
                     SecurityServiceInterface::class => SecurityService::class,
                     RouterAuthorizationMiddleware::class => RouterAuthorizationMiddleware::class,
                 ],
-            ],
-            MiddlewareChainInterface::class => [
-                RouterAuthorizationMiddleware::class => 120,
             ],
         ];
     }
