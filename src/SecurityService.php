@@ -8,10 +8,10 @@ use ExtendsFramework\Authentication\Token\TokenInterface;
 use ExtendsFramework\Authorization\AuthorizerInterface;
 use ExtendsFramework\Authorization\Permission\Permission;
 use ExtendsFramework\Authorization\Role\Role;
-use ExtendsFramework\Security\Exception\IdentityNotFound;
 use ExtendsFramework\Identity\Identity;
 use ExtendsFramework\Identity\IdentityInterface;
 use ExtendsFramework\Identity\Storage\StorageInterface;
+use ExtendsFramework\Security\Exception\IdentityNotFound;
 
 class SecurityService implements SecurityServiceInterface
 {
@@ -43,8 +43,11 @@ class SecurityService implements SecurityServiceInterface
      * @param AuthorizerInterface    $authorizer
      * @param StorageInterface       $storage
      */
-    public function __construct(AuthenticatorInterface $authenticator, AuthorizerInterface $authorizer, StorageInterface $storage)
-    {
+    public function __construct(
+        AuthenticatorInterface $authenticator,
+        AuthorizerInterface $authorizer,
+        StorageInterface $storage
+    ) {
         $this->authenticator = $authenticator;
         $this->authorizer = $authorizer;
         $this->storage = $storage;
