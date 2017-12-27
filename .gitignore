@@ -1,7 +1,5 @@
 .idea/
 vendor/
+phpcs.xml
 phpunit.xml
-clover.xml
 composer.lock
-composer.phar
-phpunit.phar
