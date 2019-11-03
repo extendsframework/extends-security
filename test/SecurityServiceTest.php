@@ -11,6 +11,7 @@ use ExtendsFramework\Authorization\Permission\PermissionInterface;
 use ExtendsFramework\Authorization\Role\RoleInterface;
 use ExtendsFramework\Identity\IdentityInterface;
 use ExtendsFramework\Identity\Storage\StorageInterface;
+use ExtendsFramework\Security\Exception\IdentityNotFound;
 use PHPUnit\Framework\TestCase;
 
 class SecurityServiceTest extends TestCase
@@ -23,7 +24,6 @@ class SecurityServiceTest extends TestCase
      * @covers \ExtendsFramework\Security\SecurityService::__construct()
      * @covers \ExtendsFramework\Security\SecurityService::authenticate()
      * @covers \ExtendsFramework\Security\SecurityService::getIdentity()
-     * @covers \ExtendsFramework\Security\SecurityService::getAuthenticator()
      */
     public function testAuthenticate(): void
     {
@@ -79,7 +79,6 @@ class SecurityServiceTest extends TestCase
      * @covers \ExtendsFramework\Security\SecurityService::checkPermission()
      * @covers \ExtendsFramework\Security\SecurityService::hasRole()
      * @covers \ExtendsFramework\Security\SecurityService::checkRole()
-     * @covers \ExtendsFramework\Security\SecurityService::getAuthorizer()
      */
     public function testAuthorizerMethods(): void
     {
@@ -149,7 +148,6 @@ class SecurityServiceTest extends TestCase
      *
      * @covers                   \ExtendsFramework\Security\SecurityService::__construct()
      * @covers                   \ExtendsFramework\Security\SecurityService::getIdentity()
-     * @covers                   \ExtendsFramework\Security\SecurityService::getStorage()
      * @covers                   \ExtendsFramework\Security\Exception\IdentityNotFound::__construct()
      * @expectedException        \ExtendsFramework\Security\Exception\IdentityNotFound
      * @expectedExceptionMessage No identity found. Please authenticate first.

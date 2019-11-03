@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security\Framework\Http\Middleware;
 
+use ExtendsFramework\Authentication\AuthenticationException;
+use ExtendsFramework\Authorization\AuthorizationException;
 use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Middleware\MiddlewareInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
@@ -17,7 +19,7 @@ class RouterAuthorizationMiddleware implements MiddlewareInterface
      *
      * @var SecurityServiceInterface
      */
-    protected $securityService;
+    private $securityService;
 
     /**
      * RoutePermissionMiddleware constructor.
@@ -31,6 +33,8 @@ class RouterAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
+     * @throws AuthenticationException
+     * @throws AuthorizationException
      */
     public function process(RequestInterface $request, MiddlewareChainInterface $chain): ResponseInterface
     {
@@ -39,15 +43,11 @@ class RouterAuthorizationMiddleware implements MiddlewareInterface
             $parameters = $match->getParameters();
 
             foreach ($parameters['permissions'] ?? [] as $permission) {
-                $this
-                    ->getSecurityService()
-                    ->checkPermission($permission);
+                $this->securityService->checkPermission($permission);
             }
 
             foreach ($parameters['roles'] ?? [] as $role) {
-                $this
-                    ->getSecurityService()
-                    ->checkRole($role);
+                $this->securityService->checkRole($role);
             }
         }
 

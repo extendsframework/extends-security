@@ -19,7 +19,7 @@ class SecurityConfigLoaderTest extends TestCase
      *
      * @covers \ExtendsFramework\Security\Framework\ServiceLocator\Loader\SecurityConfigLoader::load()
      */
-    public function testLoad()
+    public function testLoad(): void
     {
         $loader = new SecurityConfigLoader();
 

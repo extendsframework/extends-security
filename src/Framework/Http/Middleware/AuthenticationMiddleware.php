@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security\Framework\Http\Middleware;
 
+use ExtendsFramework\Authentication\AuthenticationException;
+use ExtendsFramework\Authentication\Token\TokenInterface;
 use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Middleware\MiddlewareInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
 use ExtendsFramework\Http\Response\ResponseInterface;
-use ExtendsFramework\Authentication\Token\TokenInterface;
 use ExtendsFramework\Security\SecurityServiceInterface;
 
 abstract class AuthenticationMiddleware implements MiddlewareInterface
@@ -17,7 +18,7 @@ abstract class AuthenticationMiddleware implements MiddlewareInterface
      *
      * @var SecurityServiceInterface
      */
-    protected $securityService;
+    private $securityService;
 
     /**
      * AuthenticationMiddleware constructor.
@@ -31,18 +32,13 @@ abstract class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
+     * @throws AuthenticationException
      */
     public function process(RequestInterface $request, MiddlewareChainInterface $chain): ResponseInterface
     {
-        $this
-            ->getSecurityService()
-            ->authenticate(
-                $this->getToken($request)
-            );
+        $this->securityService->authenticate($this->getToken($request));
 
-        return $chain->proceed(
-            $request->andAttribute('identity', $this->securityService->getIdentity())
-        );
+        return $chain->proceed($request->andAttribute('identity', $this->securityService->getIdentity()));
     }
 
     /**
@@ -52,14 +48,4 @@ abstract class AuthenticationMiddleware implements MiddlewareInterface
      * @return TokenInterface
      */
     abstract protected function getToken(RequestInterface $request): TokenInterface;
-
-    /**
-     * Get security service.
-     *
-     * @return SecurityServiceInterface
-     */
-    protected function getSecurityService(): SecurityServiceInterface
-    {
-        return $this->securityService;
-    }
 }
