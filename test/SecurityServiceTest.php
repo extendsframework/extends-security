@@ -66,7 +66,7 @@ class SecurityServiceTest extends TestCase
         $service = new SecurityService($authenticator, $authorizer, $storage);
 
         $this->assertSame($service, $service->authenticate($token));
-        $this->assertInstanceOf(IdentityInterface::class, $service->getIdentity());
+        $this->assertIsObject($service->getIdentity());
     }
 
     /**
@@ -137,7 +137,7 @@ class SecurityServiceTest extends TestCase
 
         $this->assertTrue($service->isPermitted('foo:bar:baz'));
         $this->assertSame($service, $service->checkPermission('foo:bar:baz'));
-        $this->assertTrue($service->hasRole('administraotr'));
+        $this->assertTrue($service->hasRole('administrator'));
         $this->assertSame($service, $service->checkRole('administrator'));
     }
 
@@ -146,14 +146,15 @@ class SecurityServiceTest extends TestCase
      *
      * Test that an exception will be thrown if identity is not found.
      *
-     * @covers                   \ExtendsFramework\Security\SecurityService::__construct()
-     * @covers                   \ExtendsFramework\Security\SecurityService::getIdentity()
-     * @covers                   \ExtendsFramework\Security\Exception\IdentityNotFound::__construct()
-     * @expectedException        \ExtendsFramework\Security\Exception\IdentityNotFound
-     * @expectedExceptionMessage No identity found. Please authenticate first.
+     * @covers \ExtendsFramework\Security\SecurityService::__construct()
+     * @covers \ExtendsFramework\Security\SecurityService::getIdentity()
+     * @covers \ExtendsFramework\Security\Exception\IdentityNotFound::__construct()
      */
     public function testIdentityNotFound(): void
     {
+        $this->expectException(IdentityNotFound::class);
+        $this->expectExceptionMessage('No identity found. Please authenticate first.');
+
         $authenticator = $this->createMock(AuthenticatorInterface::class);
 
         $authorizer = $this->createMock(AuthorizerInterface::class);

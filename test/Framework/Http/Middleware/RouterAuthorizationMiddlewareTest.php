@@ -69,6 +69,6 @@ class RouterAuthorizationMiddlewareTest extends TestCase
         $middleware = new RouterAuthorizationMiddleware($security);
         $response = $middleware->process($request, $chain);
 
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertIsObject($response);
     }
 }
