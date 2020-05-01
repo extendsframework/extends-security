@@ -10,16 +10,15 @@ use ExtendsFramework\Router\Route\RouteMatchInterface;
 use ExtendsFramework\Security\SecurityServiceInterface;
 use PHPUnit\Framework\TestCase;
 
-class RouterAuthorizationMiddlewareTest extends TestCase
+class AuthorizationMiddlewareTest extends TestCase
 {
     /**
      * Process.
      *
      * Test that permissions and roles route match parameters will be used for authorization.
      *
-     * @covers \ExtendsFramework\Security\Framework\Http\Middleware\RouterAuthorizationMiddleware::__construct()
-     * @covers \ExtendsFramework\Security\Framework\Http\Middleware\RouterAuthorizationMiddleware::process()
-     * @covers \ExtendsFramework\Security\Framework\Http\Middleware\RouterAuthorizationMiddleware::getSecurityService()
+     * @covers \ExtendsFramework\Security\Framework\Http\Middleware\AuthorizationMiddleware::__construct()
+     * @covers \ExtendsFramework\Security\Framework\Http\Middleware\AuthorizationMiddleware::process()
      */
     public function testProcess(): void
     {
@@ -66,7 +65,7 @@ class RouterAuthorizationMiddlewareTest extends TestCase
          * @var RequestInterface         $request
          * @var MiddlewareChainInterface $chain
          */
-        $middleware = new RouterAuthorizationMiddleware($security);
+        $middleware = new AuthorizationMiddleware($security);
         $response = $middleware->process($request, $chain);
 
         $this->assertIsObject($response);

@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace ExtendsFramework\Security\Framework\Http\Middleware;
 
 use ExtendsFramework\Authentication\AuthenticationException;
-use ExtendsFramework\Authentication\Token\TokenInterface;
+use ExtendsFramework\Authentication\Header\Header;
 use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Middleware\MiddlewareInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
 use ExtendsFramework\Http\Response\ResponseInterface;
+use ExtendsFramework\Security\Framework\Http\Middleware\Exception\InvalidHeaderFormat;
 use ExtendsFramework\Security\SecurityServiceInterface;
 
-abstract class AuthenticationMiddleware implements MiddlewareInterface
+class AuthenticationMiddleware implements MiddlewareInterface
 {
     /**
      * Security service.
@@ -21,7 +22,14 @@ abstract class AuthenticationMiddleware implements MiddlewareInterface
     private $securityService;
 
     /**
-     * AuthenticationMiddleware constructor.
+     * Pattern to detect scheme and credentials.
+     *
+     * @var string
+     */
+    private $pattern = '/^(?P<scheme>[^\s]+)\s(?P<credentials>[^\s]+)$/';
+
+    /**
+     * AuthorizationHeaderMiddleware constructor.
      *
      * @param SecurityServiceInterface $securityService
      */
@@ -36,16 +44,15 @@ abstract class AuthenticationMiddleware implements MiddlewareInterface
      */
     public function process(RequestInterface $request, MiddlewareChainInterface $chain): ResponseInterface
     {
-        $this->securityService->authenticate($this->getToken($request));
+        $authorization = $request->getHeader('Authorization');
+        if ($authorization) {
+            if (!is_string($authorization) || !preg_match($this->pattern, $authorization, $matches)) {
+                throw new InvalidHeaderFormat();
+            }
 
-        return $chain->proceed($request->andAttribute('identity', $this->securityService->getIdentity()));
+            $this->securityService->authenticate(new Header($matches['scheme'], $matches['credentials']));
+        }
+
+        return $chain->proceed($request);
     }
-
-    /**
-     * Get authentication token.
-     *
-     * @param RequestInterface $request
-     * @return TokenInterface
-     */
-    abstract protected function getToken(RequestInterface $request): TokenInterface;
 }

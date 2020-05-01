@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security\Framework\ServiceLocator\Loader;
 
-use ExtendsFramework\Security\Framework\Http\Middleware\RouterAuthorizationMiddleware;
+use ExtendsFramework\Security\Framework\Http\Middleware\AuthenticationMiddleware;
+use ExtendsFramework\Security\Framework\Http\Middleware\AuthorizationMiddleware;
 use ExtendsFramework\Security\SecurityService;
 use ExtendsFramework\Security\SecurityServiceInterface;
 use ExtendsFramework\ServiceLocator\Resolver\Reflection\ReflectionResolver;
@@ -26,8 +27,9 @@ class SecurityConfigLoaderTest extends TestCase
         $this->assertSame([
             ServiceLocatorInterface::class => [
                 ReflectionResolver::class => [
+                    AuthorizationMiddleware::class => AuthorizationMiddleware::class,
+                    AuthenticationMiddleware::class => AuthenticationMiddleware::class,
                     SecurityServiceInterface::class => SecurityService::class,
-                    RouterAuthorizationMiddleware::class => RouterAuthorizationMiddleware::class,
                 ],
             ],
         ], $loader->load());

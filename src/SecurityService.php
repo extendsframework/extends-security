@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ExtendsFramework\Security;
 
 use ExtendsFramework\Authentication\AuthenticatorInterface;
-use ExtendsFramework\Authentication\Token\TokenInterface;
+use ExtendsFramework\Authentication\Header\HeaderInterface;
 use ExtendsFramework\Authorization\AuthorizerInterface;
 use ExtendsFramework\Authorization\Permission\Permission;
 use ExtendsFramework\Authorization\Role\Role;
@@ -56,9 +56,9 @@ class SecurityService implements SecurityServiceInterface
     /**
      * @inheritDoc
      */
-    public function authenticate(TokenInterface $token): SecurityServiceInterface
+    public function authenticate(HeaderInterface $header): SecurityServiceInterface
     {
-        $info = $this->authenticator->authenticate($token);
+        $info = $this->authenticator->authenticate($header);
         $this->storage->setIdentity(new Identity($info->getIdentifier()));
 
         return $this;

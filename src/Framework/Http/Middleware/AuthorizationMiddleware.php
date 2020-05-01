@@ -12,7 +12,7 @@ use ExtendsFramework\Http\Response\ResponseInterface;
 use ExtendsFramework\Router\Route\RouteMatchInterface;
 use ExtendsFramework\Security\SecurityServiceInterface;
 
-class RouterAuthorizationMiddleware implements MiddlewareInterface
+class AuthorizationMiddleware implements MiddlewareInterface
 {
     /**
      * Security service.
@@ -52,15 +52,5 @@ class RouterAuthorizationMiddleware implements MiddlewareInterface
         }
 
         return $chain->proceed($request);
-    }
-
-    /**
-     * Get security service.
-     *
-     * @return SecurityServiceInterface
-     */
-    public function getSecurityService(): SecurityServiceInterface
-    {
-        return $this->securityService;
     }
 }

@@ -5,7 +5,7 @@ namespace ExtendsFramework\Security;
 
 use ExtendsFramework\Authentication\AuthenticationInfoInterface;
 use ExtendsFramework\Authentication\AuthenticatorInterface;
-use ExtendsFramework\Authentication\Token\TokenInterface;
+use ExtendsFramework\Authentication\Header\HeaderInterface;
 use ExtendsFramework\Authorization\AuthorizerInterface;
 use ExtendsFramework\Authorization\Permission\PermissionInterface;
 use ExtendsFramework\Authorization\Role\RoleInterface;
@@ -19,7 +19,7 @@ class SecurityServiceTest extends TestCase
     /**
      * Authenticate.
      *
-     * Test that authenticator will authenticate given token.
+     * Test that authenticator will authenticate given header.
      *
      * @covers \ExtendsFramework\Security\SecurityService::__construct()
      * @covers \ExtendsFramework\Security\SecurityService::authenticate()
@@ -27,7 +27,7 @@ class SecurityServiceTest extends TestCase
      */
     public function testAuthenticate(): void
     {
-        $token = $this->createMock(TokenInterface::class);
+        $header = $this->createMock(HeaderInterface::class);
 
         $info = $this->createMock(AuthenticationInfoInterface::class);
         $info
@@ -39,7 +39,7 @@ class SecurityServiceTest extends TestCase
         $authenticator
             ->expects($this->once())
             ->method('authenticate')
-            ->with($token)
+            ->with($header)
             ->willReturn($info);
 
         $authorizer = $this->createMock(AuthorizerInterface::class);
@@ -59,13 +59,13 @@ class SecurityServiceTest extends TestCase
 
         /**
          * @var AuthenticatorInterface $authenticator
-         * @var AuthorizerInterface    $authorizer
-         * @var StorageInterface       $storage
-         * @var TokenInterface         $token
+         * @var AuthorizerInterface $authorizer
+         * @var StorageInterface $storage
+         * @var HeaderInterface $header
          */
         $service = new SecurityService($authenticator, $authorizer, $storage);
 
-        $this->assertSame($service, $service->authenticate($token));
+        $this->assertSame($service, $service->authenticate($header));
         $this->assertIsObject($service->getIdentity());
     }
 
@@ -129,9 +129,9 @@ class SecurityServiceTest extends TestCase
 
         /**
          * @var AuthenticatorInterface $authenticator
-         * @var AuthorizerInterface    $authorizer
-         * @var StorageInterface       $storage
-         * @var TokenInterface         $token
+         * @var AuthorizerInterface $authorizer
+         * @var StorageInterface $storage
+         * @var HeaderInterface $header
          */
         $service = new SecurityService($authenticator, $authorizer, $storage);
 
@@ -163,9 +163,9 @@ class SecurityServiceTest extends TestCase
 
         /**
          * @var AuthenticatorInterface $authenticator
-         * @var AuthorizerInterface    $authorizer
-         * @var StorageInterface       $storage
-         * @var TokenInterface         $token
+         * @var AuthorizerInterface $authorizer
+         * @var StorageInterface $storage
+         * @var HeaderInterface $header
          */
         $service = new SecurityService($authenticator, $authorizer, $storage);
         $service->getIdentity();
