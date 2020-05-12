@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security\Framework\Http\Middleware;
 
-use ExtendsFramework\Authentication\AuthenticationException;
 use ExtendsFramework\Authentication\Header\Header;
 use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Middleware\MiddlewareInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
+use ExtendsFramework\Http\Response\Response;
 use ExtendsFramework\Http\Response\ResponseInterface;
-use ExtendsFramework\Security\Framework\Http\Middleware\Exception\InvalidHeaderFormat;
+use ExtendsFramework\Security\Framework\ProblemDetails\UnauthorizedProblemDetails;
 use ExtendsFramework\Security\SecurityServiceInterface;
 
 class AuthenticationMiddleware implements MiddlewareInterface
@@ -40,17 +40,17 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
-     * @throws AuthenticationException
      */
     public function process(RequestInterface $request, MiddlewareChainInterface $chain): ResponseInterface
     {
         $authorization = $request->getHeader('Authorization');
         if ($authorization) {
-            if (!is_string($authorization) || !preg_match($this->pattern, $authorization, $matches)) {
-                throw new InvalidHeaderFormat();
+            if (!is_string($authorization) || !preg_match($this->pattern, $authorization, $matches)
+                || !$this->securityService->authenticate(new Header($matches['scheme'], $matches['credentials']))) {
+                return (new Response())->withBody(
+                    new UnauthorizedProblemDetails($request)
+                );
             }
-
-            $this->securityService->authenticate(new Header($matches['scheme'], $matches['credentials']));
         }
 
         return $chain->proceed($request);

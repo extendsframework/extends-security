@@ -7,7 +7,7 @@ use ExtendsFramework\Authentication\Header\HeaderInterface;
 use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
 use ExtendsFramework\Http\Response\ResponseInterface;
-use ExtendsFramework\Security\Framework\Http\Middleware\Exception\InvalidHeaderFormat;
+use ExtendsFramework\Security\Framework\ProblemDetails\UnauthorizedProblemDetails;
 use ExtendsFramework\Security\SecurityServiceInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +16,7 @@ class AuthenticationMiddlewareTest extends TestCase
     /**
      * Process.
      *
-     * Test that permissions and roles route match parameters will be used for authorization.
+     * Test that ...
      *
      * @covers \ExtendsFramework\Security\Framework\Http\Middleware\AuthenticationMiddleware::__construct()
      * @covers \ExtendsFramework\Security\Framework\Http\Middleware\AuthenticationMiddleware::process()
@@ -32,7 +32,8 @@ class AuthenticationMiddlewareTest extends TestCase
                 $this->assertSame('ed6ed1ec-769b-4f35-b74a-d4d4205f1d88', $header->getCredentials());
 
                 return true;
-            }));
+            }))
+            ->willReturn(true);
 
         $request = $this->createMock(RequestInterface::class);
         $request
@@ -41,12 +42,14 @@ class AuthenticationMiddlewareTest extends TestCase
             ->with('Authorization')
             ->willReturn('Bearer ed6ed1ec-769b-4f35-b74a-d4d4205f1d88');
 
+        $response = $this->createMock(ResponseInterface::class);
+
         $chain = $this->createMock(MiddlewareChainInterface::class);
         $chain
             ->expects($this->once())
             ->method('proceed')
             ->with($request)
-            ->willReturn($this->createMock(ResponseInterface::class));
+            ->willReturn($response);
 
         /**
          * @var SecurityServiceInterface $security
@@ -54,25 +57,20 @@ class AuthenticationMiddlewareTest extends TestCase
          * @var MiddlewareChainInterface $chain
          */
         $middleware = new AuthenticationMiddleware($security);
-        $response = $middleware->process($request, $chain);
 
-        $this->assertIsObject($response);
+        $this->assertSame($response, $middleware->process($request, $chain));
     }
 
     /**
-     * Invalid header format.
+     * Unauthorized.
      *
-     * Test that an exception will be thrown when the Authorization header has a invalid format.
+     * Test that the correct response will be returned when request can not be authenticated.
      *
      * @covers \ExtendsFramework\Security\Framework\Http\Middleware\AuthenticationMiddleware::__construct()
      * @covers \ExtendsFramework\Security\Framework\Http\Middleware\AuthenticationMiddleware::process()
-     * @covers \ExtendsFramework\Security\Framework\Http\Middleware\Exception\InvalidHeaderFormat::__construct()
      */
-    public function testInvalidHeaderFormat(): void
+    public function testUnauthorized(): void
     {
-        $this->expectException(InvalidHeaderFormat::class);
-        $this->expectExceptionMessage('Invalid Authorization header format.');
-
         $security = $this->createMock(SecurityServiceInterface::class);
 
         $request = $this->createMock(RequestInterface::class);
@@ -90,6 +88,8 @@ class AuthenticationMiddlewareTest extends TestCase
          * @var MiddlewareChainInterface $chain
          */
         $middleware = new AuthenticationMiddleware($security);
-        $middleware->process($request, $chain);
+        $response = $middleware->process($request, $chain);
+
+        $this->assertInstanceOf(UnauthorizedProblemDetails::class, $response->getBody());
     }
 }

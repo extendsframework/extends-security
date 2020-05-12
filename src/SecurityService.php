@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security;
 
+use ExtendsFramework\Authentication\AuthenticationInfoInterface;
 use ExtendsFramework\Authentication\AuthenticatorInterface;
 use ExtendsFramework\Authentication\Header\HeaderInterface;
 use ExtendsFramework\Authorization\AuthorizerInterface;
@@ -11,7 +12,6 @@ use ExtendsFramework\Authorization\Role\Role;
 use ExtendsFramework\Identity\Identity;
 use ExtendsFramework\Identity\IdentityInterface;
 use ExtendsFramework\Identity\Storage\StorageInterface;
-use ExtendsFramework\Security\Exception\IdentityNotFound;
 
 class SecurityService implements SecurityServiceInterface
 {
@@ -40,8 +40,8 @@ class SecurityService implements SecurityServiceInterface
      * SecurityService constructor.
      *
      * @param AuthenticatorInterface $authenticator
-     * @param AuthorizerInterface    $authorizer
-     * @param StorageInterface       $storage
+     * @param AuthorizerInterface $authorizer
+     * @param StorageInterface $storage
      */
     public function __construct(
         AuthenticatorInterface $authenticator,
@@ -56,25 +56,16 @@ class SecurityService implements SecurityServiceInterface
     /**
      * @inheritDoc
      */
-    public function authenticate(HeaderInterface $header): SecurityServiceInterface
+    public function authenticate(HeaderInterface $header): bool
     {
         $info = $this->authenticator->authenticate($header);
-        $this->storage->setIdentity(new Identity($info->getIdentifier()));
+        if ($info instanceof AuthenticationInfoInterface) {
+            $this->storage->setIdentity(new Identity($info->getIdentifier()));
 
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIdentity(): IdentityInterface
-    {
-        $identity = $this->storage->getIdentity();
-        if ($identity instanceof IdentityInterface) {
-            return $identity;
+            return true;
         }
 
-        throw new IdentityNotFound();
+        return false;
     }
 
     /**
@@ -82,17 +73,25 @@ class SecurityService implements SecurityServiceInterface
      */
     public function isPermitted(string $permission): bool
     {
-        return $this->authorizer->isPermitted($this->getIdentity(), new Permission($permission));
+        $identity = $this->getIdentity();
+        if ($identity instanceof IdentityInterface) {
+            return $this->authorizer->isPermitted($this->getIdentity(), new Permission($permission));
+        }
+
+        return false;
     }
 
     /**
      * @inheritDoc
      */
-    public function checkPermission(string $permission): SecurityServiceInterface
+    public function getIdentity(): ?IdentityInterface
     {
-        $this->authorizer->checkPermission($this->getIdentity(), new Permission($permission));
+        $identity = $this->storage->getIdentity();
+        if ($identity instanceof IdentityInterface) {
+            return $identity;
+        }
 
-        return $this;
+        return null;
     }
 
     /**
@@ -100,16 +99,11 @@ class SecurityService implements SecurityServiceInterface
      */
     public function hasRole(string $role): bool
     {
-        return $this->authorizer->hasRole($this->getIdentity(), new Role($role));
-    }
+        $identity = $this->getIdentity();
+        if ($identity instanceof IdentityInterface) {
+            return $this->authorizer->hasRole($this->getIdentity(), new Role($role));
+        }
 
-    /**
-     * @inheritDoc
-     */
-    public function checkRole(string $role): SecurityServiceInterface
-    {
-        $this->authorizer->checkRole($this->getIdentity(), new Role($role));
-
-        return $this;
+        return false;
     }
 }

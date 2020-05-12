@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace ExtendsFramework\Security\Framework\Http\Middleware;
 
-use ExtendsFramework\Authentication\AuthenticationException;
-use ExtendsFramework\Authorization\AuthorizationException;
 use ExtendsFramework\Http\Middleware\Chain\MiddlewareChainInterface;
 use ExtendsFramework\Http\Middleware\MiddlewareInterface;
 use ExtendsFramework\Http\Request\RequestInterface;
+use ExtendsFramework\Http\Response\Response;
 use ExtendsFramework\Http\Response\ResponseInterface;
 use ExtendsFramework\Router\Route\RouteMatchInterface;
+use ExtendsFramework\Security\Framework\ProblemDetails\ForbiddenProblemDetails;
 use ExtendsFramework\Security\SecurityServiceInterface;
 
 class AuthorizationMiddleware implements MiddlewareInterface
@@ -33,8 +33,6 @@ class AuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * @inheritDoc
-     * @throws AuthenticationException
-     * @throws AuthorizationException
      */
     public function process(RequestInterface $request, MiddlewareChainInterface $chain): ResponseInterface
     {
@@ -42,12 +40,26 @@ class AuthorizationMiddleware implements MiddlewareInterface
         if ($match instanceof RouteMatchInterface) {
             $parameters = $match->getParameters();
 
-            foreach ($parameters['permissions'] ?? [] as $permission) {
-                $this->securityService->checkPermission($permission);
-            }
+            if (isset($parameters['permissions']) || isset($parameters['roles'])) {
+                $authorized = false;
 
-            foreach ($parameters['roles'] ?? [] as $role) {
-                $this->securityService->checkRole($role);
+                foreach ($parameters['permissions'] as $permission) {
+                    if ($this->securityService->isPermitted($permission)) {
+                        $authorized = true;
+                    }
+                }
+
+                foreach ($parameters['roles'] as $role) {
+                    if ($this->securityService->hasRole($role)) {
+                        $authorized = true;
+                    }
+                }
+
+                if (!$authorized) {
+                    return (new Response())->withBody(
+                        new ForbiddenProblemDetails($request)
+                    );
+                }
             }
         }
 

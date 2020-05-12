@@ -11,7 +11,6 @@ use ExtendsFramework\Authorization\Permission\PermissionInterface;
 use ExtendsFramework\Authorization\Role\RoleInterface;
 use ExtendsFramework\Identity\IdentityInterface;
 use ExtendsFramework\Identity\Storage\StorageInterface;
-use ExtendsFramework\Security\Exception\IdentityNotFound;
 use PHPUnit\Framework\TestCase;
 
 class SecurityServiceTest extends TestCase
@@ -37,10 +36,10 @@ class SecurityServiceTest extends TestCase
 
         $authenticator = $this->createMock(AuthenticatorInterface::class);
         $authenticator
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('authenticate')
             ->with($header)
-            ->willReturn($info);
+            ->willReturnOnConsecutiveCalls($info, null);
 
         $authorizer = $this->createMock(AuthorizerInterface::class);
 
@@ -65,8 +64,9 @@ class SecurityServiceTest extends TestCase
          */
         $service = new SecurityService($authenticator, $authorizer, $storage);
 
-        $this->assertSame($service, $service->authenticate($header));
+        $this->assertTrue($service->authenticate($header));
         $this->assertIsObject($service->getIdentity());
+        $this->assertFalse($service->authenticate($header));
     }
 
     /**
@@ -76,9 +76,7 @@ class SecurityServiceTest extends TestCase
      *
      * @covers \ExtendsFramework\Security\SecurityService::__construct()
      * @covers \ExtendsFramework\Security\SecurityService::isPermitted()
-     * @covers \ExtendsFramework\Security\SecurityService::checkPermission()
      * @covers \ExtendsFramework\Security\SecurityService::hasRole()
-     * @covers \ExtendsFramework\Security\SecurityService::checkRole()
      */
     public function testAuthorizerMethods(): void
     {
@@ -104,28 +102,12 @@ class SecurityServiceTest extends TestCase
 
         $authorizer
             ->expects($this->once())
-            ->method('checkPermission')
-            ->with(
-                $identity,
-                $this->isInstanceOf(PermissionInterface::class)
-            );
-
-        $authorizer
-            ->expects($this->once())
             ->method('hasRole')
             ->with(
                 $identity,
                 $this->isInstanceOf(RoleInterface::class)
             )
             ->willReturn(true);
-
-        $authorizer
-            ->expects($this->once())
-            ->method('checkRole')
-            ->with(
-                $identity,
-                $this->isInstanceOf(RoleInterface::class)
-            );
 
         /**
          * @var AuthenticatorInterface $authenticator
@@ -136,25 +118,21 @@ class SecurityServiceTest extends TestCase
         $service = new SecurityService($authenticator, $authorizer, $storage);
 
         $this->assertTrue($service->isPermitted('foo:bar:baz'));
-        $this->assertSame($service, $service->checkPermission('foo:bar:baz'));
         $this->assertTrue($service->hasRole('administrator'));
-        $this->assertSame($service, $service->checkRole('administrator'));
     }
 
     /**
      * Identity not found.
      *
-     * Test that an exception will be thrown if identity is not found.
+     * Test that null will be returned when identity is not found.
      *
      * @covers \ExtendsFramework\Security\SecurityService::__construct()
      * @covers \ExtendsFramework\Security\SecurityService::getIdentity()
-     * @covers \ExtendsFramework\Security\Exception\IdentityNotFound::__construct()
+     * @covers \ExtendsFramework\Security\SecurityService::isPermitted()
+     * @covers \ExtendsFramework\Security\SecurityService::hasRole()
      */
     public function testIdentityNotFound(): void
     {
-        $this->expectException(IdentityNotFound::class);
-        $this->expectExceptionMessage('No identity found. Please authenticate first.');
-
         $authenticator = $this->createMock(AuthenticatorInterface::class);
 
         $authorizer = $this->createMock(AuthorizerInterface::class);
@@ -168,6 +146,9 @@ class SecurityServiceTest extends TestCase
          * @var HeaderInterface $header
          */
         $service = new SecurityService($authenticator, $authorizer, $storage);
-        $service->getIdentity();
+
+        $this->assertNull($service->getIdentity());
+        $this->assertFalse($service->isPermitted('foo:bar:baz'));
+        $this->assertFalse($service->hasRole('administrator'));
     }
 }
