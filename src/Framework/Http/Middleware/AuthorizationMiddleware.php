@@ -43,13 +43,13 @@ class AuthorizationMiddleware implements MiddlewareInterface
             if (isset($parameters['permissions']) || isset($parameters['roles'])) {
                 $authorized = false;
 
-                foreach ($parameters['permissions'] as $permission) {
+                foreach ($parameters['permissions'] ?? [] as $permission) {
                     if ($this->securityService->isPermitted($permission)) {
                         $authorized = true;
                     }
                 }
 
-                foreach ($parameters['roles'] as $role) {
+                foreach ($parameters['roles'] ?? [] as $role) {
                     if ($this->securityService->hasRole($role)) {
                         $authorized = true;
                     }
