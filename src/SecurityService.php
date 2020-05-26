@@ -75,7 +75,7 @@ class SecurityService implements SecurityServiceInterface
     {
         $identity = $this->getIdentity();
         if ($identity instanceof IdentityInterface) {
-            return $this->authorizer->isPermitted($this->getIdentity(), new Permission($permission));
+            return $this->authorizer->isPermitted($identity, new Permission($permission));
         }
 
         return false;
@@ -101,7 +101,7 @@ class SecurityService implements SecurityServiceInterface
     {
         $identity = $this->getIdentity();
         if ($identity instanceof IdentityInterface) {
-            return $this->authorizer->hasRole($this->getIdentity(), new Role($role));
+            return $this->authorizer->hasRole($identity, new Role($role));
         }
 
         return false;

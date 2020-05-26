@@ -86,7 +86,7 @@ class SecurityServiceTest extends TestCase
 
         $storage = $this->createMock(StorageInterface::class);
         $storage
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(2))
             ->method('getIdentity')
             ->willReturn($identity);
 
