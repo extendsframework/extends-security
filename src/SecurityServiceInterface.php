@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ExtendsFramework\Security;
 
 use ExtendsFramework\Authentication\Header\HeaderInterface;
+use ExtendsFramework\Authorization\Policy\PolicyInterface;
 use ExtendsFramework\Identity\IdentityInterface;
 
 interface SecurityServiceInterface
@@ -22,16 +23,12 @@ interface SecurityServiceInterface
     /**
      * Get identity.
      *
-     * An exception will be thrown when no identity is available.
-     *
      * @return IdentityInterface
      */
     public function getIdentity(): ?IdentityInterface;
 
     /**
      * If identity is permitted for permission.
-     *
-     * An exception will be thrown when no identity is available.
      *
      * @param string $permission
      *
@@ -42,11 +39,18 @@ interface SecurityServiceInterface
     /**
      * If identity has role.
      *
-     * An exception will be thrown when no identity is available.
-     *
      * @param string $role
      *
      * @return bool
      */
     public function hasRole(string $role): bool;
+
+    /**
+     * If policy is allowed by policy.
+     *
+     * @param PolicyInterface $policy
+     *
+     * @return bool
+     */
+    public function isAllowed(PolicyInterface $policy): bool;
 }

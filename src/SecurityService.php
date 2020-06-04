@@ -8,6 +8,7 @@ use ExtendsFramework\Authentication\AuthenticatorInterface;
 use ExtendsFramework\Authentication\Header\HeaderInterface;
 use ExtendsFramework\Authorization\AuthorizerInterface;
 use ExtendsFramework\Authorization\Permission\Permission;
+use ExtendsFramework\Authorization\Policy\PolicyInterface;
 use ExtendsFramework\Authorization\Role\Role;
 use ExtendsFramework\Identity\Identity;
 use ExtendsFramework\Identity\IdentityInterface;
@@ -71,19 +72,6 @@ class SecurityService implements SecurityServiceInterface
     /**
      * @inheritDoc
      */
-    public function isPermitted(string $permission): bool
-    {
-        $identity = $this->getIdentity();
-        if ($identity instanceof IdentityInterface) {
-            return $this->authorizer->isPermitted($identity, new Permission($permission));
-        }
-
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getIdentity(): ?IdentityInterface
     {
         $identity = $this->storage->getIdentity();
@@ -97,11 +85,37 @@ class SecurityService implements SecurityServiceInterface
     /**
      * @inheritDoc
      */
+    public function isPermitted(string $permission): bool
+    {
+        $identity = $this->getIdentity();
+        if ($identity instanceof IdentityInterface) {
+            return $this->authorizer->isPermitted($identity, new Permission($permission));
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function hasRole(string $role): bool
     {
         $identity = $this->getIdentity();
         if ($identity instanceof IdentityInterface) {
             return $this->authorizer->hasRole($identity, new Role($role));
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isAllowed(PolicyInterface $policy): bool
+    {
+        $identity = $this->getIdentity();
+        if ($identity instanceof IdentityInterface) {
+            return $this->authorizer->isAllowed($identity, $policy);
         }
 
         return false;

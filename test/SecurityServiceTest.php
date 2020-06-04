@@ -8,6 +8,7 @@ use ExtendsFramework\Authentication\AuthenticatorInterface;
 use ExtendsFramework\Authentication\Header\HeaderInterface;
 use ExtendsFramework\Authorization\AuthorizerInterface;
 use ExtendsFramework\Authorization\Permission\PermissionInterface;
+use ExtendsFramework\Authorization\Policy\PolicyInterface;
 use ExtendsFramework\Authorization\Role\RoleInterface;
 use ExtendsFramework\Identity\IdentityInterface;
 use ExtendsFramework\Identity\Storage\StorageInterface;
@@ -77,6 +78,7 @@ class SecurityServiceTest extends TestCase
      * @covers \ExtendsFramework\Security\SecurityService::__construct()
      * @covers \ExtendsFramework\Security\SecurityService::isPermitted()
      * @covers \ExtendsFramework\Security\SecurityService::hasRole()
+     * @covers \ExtendsFramework\Security\SecurityService::isAllowed()
      */
     public function testAuthorizerMethods(): void
     {
@@ -84,9 +86,11 @@ class SecurityServiceTest extends TestCase
 
         $identity = $this->createMock(IdentityInterface::class);
 
+        $policy = $this->createMock(PolicyInterface::class);
+
         $storage = $this->createMock(StorageInterface::class);
         $storage
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('getIdentity')
             ->willReturn($identity);
 
@@ -109,16 +113,24 @@ class SecurityServiceTest extends TestCase
             )
             ->willReturn(true);
 
+        $authorizer
+            ->expects($this->once())
+            ->method('isAllowed')
+            ->with($identity, $policy)
+            ->willReturn(true);
+
         /**
          * @var AuthenticatorInterface $authenticator
          * @var AuthorizerInterface $authorizer
          * @var StorageInterface $storage
          * @var HeaderInterface $header
+         * @var  PolicyInterface $policy
          */
         $service = new SecurityService($authenticator, $authorizer, $storage);
 
         $this->assertTrue($service->isPermitted('foo:bar:baz'));
         $this->assertTrue($service->hasRole('administrator'));
+        $this->assertTrue($service->isAllowed($policy));
     }
 
     /**
@@ -130,6 +142,7 @@ class SecurityServiceTest extends TestCase
      * @covers \ExtendsFramework\Security\SecurityService::getIdentity()
      * @covers \ExtendsFramework\Security\SecurityService::isPermitted()
      * @covers \ExtendsFramework\Security\SecurityService::hasRole()
+     * @covers \ExtendsFramework\Security\SecurityService::isAllowed()
      */
     public function testIdentityNotFound(): void
     {
@@ -139,16 +152,20 @@ class SecurityServiceTest extends TestCase
 
         $storage = $this->createMock(StorageInterface::class);
 
+        $policy = $this->createMock(PolicyInterface::class);
+
         /**
          * @var AuthenticatorInterface $authenticator
          * @var AuthorizerInterface $authorizer
          * @var StorageInterface $storage
          * @var HeaderInterface $header
+         * @var  PolicyInterface $policy
          */
         $service = new SecurityService($authenticator, $authorizer, $storage);
 
         $this->assertNull($service->getIdentity());
         $this->assertFalse($service->isPermitted('foo:bar:baz'));
         $this->assertFalse($service->hasRole('administrator'));
+        $this->assertFalse($service->isAllowed($policy));
     }
 }
