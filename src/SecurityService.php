@@ -10,7 +10,6 @@ use ExtendsFramework\Authorization\AuthorizerInterface;
 use ExtendsFramework\Authorization\Permission\Permission;
 use ExtendsFramework\Authorization\Policy\PolicyInterface;
 use ExtendsFramework\Authorization\Role\Role;
-use ExtendsFramework\Identity\Identity;
 use ExtendsFramework\Identity\IdentityInterface;
 use ExtendsFramework\Identity\Storage\StorageInterface;
 
@@ -61,9 +60,22 @@ class SecurityService implements SecurityServiceInterface
     {
         $info = $this->authenticator->authenticate($header);
         if ($info instanceof AuthenticationInfoInterface) {
-            $this->storage->setIdentity(new Identity($info->getIdentifier()));
+            $this->storage->setIdentity($info->getIdentity());
 
             return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isPermitted(string $permission): bool
+    {
+        $identity = $this->getIdentity();
+        if ($identity instanceof IdentityInterface) {
+            return $this->authorizer->isPermitted($identity, new Permission($permission));
         }
 
         return false;
@@ -80,19 +92,6 @@ class SecurityService implements SecurityServiceInterface
         }
 
         return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isPermitted(string $permission): bool
-    {
-        $identity = $this->getIdentity();
-        if ($identity instanceof IdentityInterface) {
-            return $this->authorizer->isPermitted($identity, new Permission($permission));
-        }
-
-        return false;
     }
 
     /**

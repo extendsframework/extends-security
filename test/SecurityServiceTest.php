@@ -29,11 +29,13 @@ class SecurityServiceTest extends TestCase
     {
         $header = $this->createMock(HeaderInterface::class);
 
+        $identity = $this->createMock(IdentityInterface::class);
+
         $info = $this->createMock(AuthenticationInfoInterface::class);
         $info
             ->expects($this->once())
-            ->method('getIdentifier')
-            ->willReturn('foo-bar-baz');
+            ->method('getIdentity')
+            ->willReturn($identity);
 
         $authenticator = $this->createMock(AuthenticatorInterface::class);
         $authenticator
